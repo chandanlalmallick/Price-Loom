@@ -1,0 +1,644 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>PriceLoom — Is this price actually good?</title>
+<style>
+  :root {
+    --bg: #f6f7fb;
+    --card: #ffffff;
+    --border: #e6e8ef;
+    --text: #14161c;
+    --muted: #6b7180;
+    --accent: #4f46e5;
+    --accent-light: #eef0fe;
+    --green: #16a34a;
+    --green-bg: #ecfdf3;
+    --yellow: #b45309;
+    --yellow-bg: #fffbeb;
+    --red: #dc2626;
+    --red-bg: #fef2f2;
+    --amazon: #ff9900;
+    --flipkart: #2874f0;
+    --radius: 16px;
+  }
+
+  * { box-sizing: border-box; }
+
+  body {
+    margin: 0;
+    background: var(--bg);
+    color: var(--text);
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  a { color: inherit; text-decoration: none; }
+
+  /* ---------- Top bar ---------- */
+  .topbar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 16px 20px;
+    background: var(--card);
+    border-bottom: 1px solid var(--border);
+    position: sticky;
+    top: 0;
+    z-index: 20;
+  }
+  .brand { display: flex; align-items: center; gap: 8px; font-weight: 800; font-size: 1.25rem; cursor: pointer; }
+  .brand .dot { width: 10px; height: 10px; border-radius: 50%; background: var(--accent); }
+  .back-btn {
+    display: none;
+    align-items: center;
+    gap: 6px;
+    font-weight: 600;
+    color: var(--accent);
+    font-size: 0.9rem;
+    cursor: pointer;
+    background: none;
+    border: none;
+  }
+
+  .demo-banner {
+    background: #1e1b2e;
+    color: #d9c8ff;
+    text-align: center;
+    font-size: 0.78rem;
+    padding: 8px 16px;
+    letter-spacing: 0.01em;
+  }
+
+  .container { max-width: 760px; margin: 0 auto; padding: 24px 18px 70px; }
+
+  /* ---------- Home / hero ---------- */
+  .hero { text-align: center; padding: 20px 6px 6px; }
+  .hero h1 { font-size: 1.7rem; margin: 0 0 6px; line-height: 1.3; }
+  .hero p { color: var(--muted); margin: 0 0 22px; font-size: 0.98rem; }
+
+  .search-box {
+    display: flex;
+    gap: 8px;
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 6px;
+    box-shadow: 0 1px 2px rgba(20,22,28,0.04);
+  }
+  .search-box input {
+    flex: 1;
+    border: none;
+    outline: none;
+    padding: 12px 10px;
+    font-size: 1rem;
+    background: transparent;
+    color: var(--text);
+  }
+  .search-box button {
+    border: none;
+    background: var(--accent);
+    color: #fff;
+    padding: 0 20px;
+    border-radius: 10px;
+    font-weight: 700;
+    font-size: 0.95rem;
+    cursor: pointer;
+  }
+
+  .section-heading {
+    font-size: 0.85rem;
+    font-weight: 700;
+    color: var(--muted);
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    margin: 30px 2px 12px;
+  }
+
+  /* ---------- Product grid ---------- */
+  .grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+  }
+  @media (min-width: 620px) {
+    .grid { grid-template-columns: 1fr 1fr; gap: 14px; }
+  }
+
+  .card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 16px;
+    cursor: pointer;
+    transition: transform 0.12s ease, box-shadow 0.12s ease;
+  }
+  .card:hover { transform: translateY(-2px); box-shadow: 0 8px 20px rgba(20,22,28,0.06); }
+  .card .emoji { font-size: 2rem; margin-bottom: 8px; display: block; }
+  .card .name { font-weight: 700; font-size: 0.95rem; margin-bottom: 6px; }
+  .card .lowest-price { font-size: 1.15rem; font-weight: 800; color: var(--accent); }
+  .card .store-tag { font-size: 0.7rem; color: var(--muted); margin-top: 2px; }
+
+  .empty { text-align: center; color: var(--muted); padding: 40px 10px; font-size: 0.95rem; }
+
+  /* ---------- Product detail ---------- */
+  .pd-title { font-size: 1.4rem; font-weight: 800; margin: 4px 0 2px; }
+  .pd-emoji { font-size: 2.4rem; }
+
+  .notice {
+    background: #1e1b2e;
+    color: #d9c8ff;
+    font-size: 0.8rem;
+    padding: 10px 14px;
+    border-radius: 10px;
+    margin: 14px 0 20px;
+    font-weight: 600;
+  }
+
+  .store-rows { display: flex; flex-direction: column; gap: 10px; margin-bottom: 22px; }
+  .store-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 14px 16px;
+  }
+  .store-row.best { border-color: var(--green); background: var(--green-bg); }
+  .store-name { display: flex; align-items: center; gap: 8px; font-weight: 700; font-size: 0.95rem; }
+  .store-dot { width: 9px; height: 9px; border-radius: 50%; }
+  .dot-amazon { background: var(--amazon); }
+  .dot-flipkart { background: var(--flipkart); }
+  .store-price { font-weight: 800; font-size: 1.1rem; }
+  .best-pill {
+    font-size: 0.62rem;
+    background: var(--green);
+    color: #fff;
+    padding: 2px 8px;
+    border-radius: 20px;
+    font-weight: 800;
+    margin-left: 8px;
+    vertical-align: middle;
+  }
+  .demo-btn {
+    font-size: 0.75rem;
+    color: var(--accent);
+    font-weight: 700;
+    background: var(--accent-light);
+    padding: 6px 10px;
+    border-radius: 8px;
+    margin-left: 10px;
+    white-space: nowrap;
+  }
+
+  .lowest-banner {
+    background: var(--accent);
+    color: #fff;
+    border-radius: 16px;
+    padding: 18px 20px;
+    text-align: center;
+    margin-bottom: 20px;
+  }
+  .lowest-banner .label { font-size: 0.75rem; opacity: 0.85; text-transform: uppercase; letter-spacing: 0.05em; font-weight: 700; }
+  .lowest-banner .amount { font-size: 2rem; font-weight: 800; margin-top: 4px; }
+
+  .summary-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+    margin-bottom: 6px;
+  }
+  .summary-card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 14px;
+  }
+  .summary-card .label { font-size: 0.72rem; color: var(--muted); font-weight: 700; text-transform: uppercase; letter-spacing: 0.03em; }
+  .summary-card .value { font-size: 1.2rem; font-weight: 800; margin-top: 4px; }
+
+  .indicator {
+    margin-top: 16px;
+    padding: 16px;
+    border-radius: 14px;
+    font-weight: 700;
+    font-size: 1rem;
+    text-align: center;
+  }
+  .indicator.good { background: var(--green-bg); color: var(--green); }
+  .indicator.normal { background: var(--yellow-bg); color: var(--yellow); }
+  .indicator.high { background: var(--red-bg); color: var(--red); }
+  .indicator .sub { display: block; font-weight: 500; font-size: 0.8rem; margin-top: 4px; opacity: 0.85; }
+
+  .chart-card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 16px 12px;
+  }
+  .chart-card svg { width: 100%; height: auto; display: block; }
+
+  table.history-table {
+    width: 100%;
+    border-collapse: collapse;
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    overflow: hidden;
+    font-size: 0.85rem;
+  }
+  table.history-table th, table.history-table td {
+    text-align: left;
+    padding: 10px 12px;
+    border-bottom: 1px solid var(--border);
+  }
+  table.history-table th {
+    color: var(--muted);
+    font-weight: 700;
+    font-size: 0.72rem;
+    text-transform: uppercase;
+    background: #fafafd;
+  }
+  table.history-table tr:last-child td { border-bottom: none; }
+  table.history-table tr.lowest-row td:last-child { color: var(--green); font-weight: 800; }
+
+  .not-enough {
+    text-align: center;
+    color: var(--muted);
+    padding: 30px 10px;
+    background: var(--card);
+    border: 1px dashed var(--border);
+    border-radius: 14px;
+    font-size: 0.9rem;
+  }
+
+  .footer {
+    text-align: center;
+    color: var(--muted);
+    font-size: 0.78rem;
+    padding: 26px 16px 40px;
+  }
+
+  .hidden { display: none !important; }
+</style>
+</head>
+<body>
+
+  <header class="topbar">
+    <button class="back-btn" id="backBtn" onclick="showHome()">← Back</button>
+    <div class="brand" onclick="showHome()">
+      <span class="dot"></span> PriceLoom
+    </div>
+    <span></span>
+  </header>
+
+  <div class="demo-banner">
+    ⚠️ DEMO DATA — Prices shown are for demonstration only and are not live Amazon or Flipkart prices.
+  </div>
+
+  <!-- ===================== HOME VIEW ===================== -->
+  <main class="container" id="homeView">
+    <div class="hero">
+      <h1>Is this price actually good?</h1>
+      <p>Compare Amazon &amp; Flipkart, and see the recent lowest observed price.</p>
+      <div class="search-box">
+        <input type="text" id="searchInput" placeholder="Search: smartphone, laptop, headphones, TV..." oninput="renderGrid(this.value)">
+        <button onclick="renderGrid(document.getElementById('searchInput').value)">Search</button>
+      </div>
+    </div>
+
+    <div class="section-heading">Demo products</div>
+    <div class="grid" id="productGrid"></div>
+  </main>
+
+  <!-- ===================== PRODUCT DETAIL VIEW ===================== -->
+  <main class="container hidden" id="detailView">
+    <div>
+      <span class="pd-emoji" id="pdEmoji"></span>
+      <h1 class="pd-title" id="pdName"></h1>
+    </div>
+
+    <div class="notice">DEMO DATA — not real Amazon or Flipkart price history.</div>
+
+    <div class="store-rows" id="storeRows"></div>
+
+    <div class="lowest-banner">
+      <div class="label">Lowest current price</div>
+      <div class="amount" id="lowestCurrent"></div>
+    </div>
+
+    <div class="summary-grid">
+      <div class="summary-card">
+        <div class="label">Recent lowest observed</div>
+        <div class="value" id="recentLowest"></div>
+      </div>
+      <div class="summary-card">
+        <div class="label">Difference</div>
+        <div class="value" id="diffAmount"></div>
+      </div>
+    </div>
+
+    <div class="indicator" id="buyIndicator"></div>
+
+    <div class="section-heading">Price history</div>
+    <div id="chartArea"></div>
+
+    <div class="section-heading">Monthly lowest price</div>
+    <div id="tableArea"></div>
+  </main>
+
+  <footer class="footer">
+    PriceLoom is a work in progress. All prices shown are demo data, not live prices.
+  </footer>
+
+<script>
+/* =========================================================================
+   DEMO DATA
+   Every number below is fictional, made up for layout/demo purposes only.
+   Kept as a clean array of objects so it can later be swapped for real
+   data (e.g. fetched from a backend) without changing the rendering code
+   below — every render function just reads from `product.history` /
+   `product.stores` in this same shape.
+
+   history: one entry per month PriceLoom "observed" a price. Only as
+   many months as we actually have — never invent missing months.
+========================================================================= */
+
+const DEMO_PRODUCTS = [
+  {
+    id: "phone1",
+    name: "Galaxy Smartphone 128GB",
+    emoji: "📱",
+    stores: [
+      { store: "amazon", price: 69499, url: "https://www.amazon.in" },
+      { store: "flipkart", price: 67999, url: "https://www.flipkart.com" }
+    ],
+    history: [
+      { month: "April",  amazon: 68999, flipkart: 70999 },
+      { month: "May",    amazon: 67499, flipkart: 68999 },
+      { month: "June",   amazon: 66999, flipkart: 67999 },
+      { month: "July",   amazon: 64999, flipkart: 66999 },
+      { month: "August", amazon: 67999, flipkart: 67999 }
+    ]
+  },
+  {
+    id: "laptop1",
+    name: "Slimbook Laptop i5 16GB",
+    emoji: "💻",
+    stores: [
+      { store: "amazon", price: 54990, url: "https://www.amazon.in" },
+      { store: "flipkart", price: 56490, url: "https://www.flipkart.com" }
+    ],
+    history: [
+      { month: "June",   amazon: 58990, flipkart: 59990 },
+      { month: "July",   amazon: 55990, flipkart: 57490 },
+      { month: "August", amazon: 54990, flipkart: 56490 }
+    ]
+  },
+  {
+    id: "buds1",
+    name: "Wireless Earbuds Pro",
+    emoji: "🎧",
+    stores: [
+      { store: "amazon", price: 1799, url: "https://www.amazon.in" },
+      { store: "flipkart", price: 1699, url: "https://www.flipkart.com" }
+    ],
+    history: [
+      { month: "August", amazon: 1799, flipkart: 1699 }
+    ]
+  },
+  {
+    id: "tv1",
+    name: "43-inch Smart LED TV",
+    emoji: "📺",
+    stores: [
+      { store: "amazon", price: 27999, url: "https://www.amazon.in" },
+      { store: "flipkart", price: 26499, url: "https://www.flipkart.com" }
+    ],
+    history: [
+      { month: "April",  amazon: 29999, flipkart: 28999 },
+      { month: "May",    amazon: 28999, flipkart: 27999 },
+      { month: "June",   amazon: 27499, flipkart: 26999 },
+      { month: "July",   amazon: 26999, flipkart: 25999 },
+      { month: "August", amazon: 27999, flipkart: 26499 }
+    ]
+  }
+];
+
+/* =========================================================================
+   HELPERS
+========================================================================= */
+
+const money = n => "₹" + Number(n).toLocaleString("en-IN");
+
+function lowestCurrent(product) {
+  return product.stores.reduce((best, s) => (s.price < best.price ? s : best), product.stores[0]);
+}
+
+/** Lowest single value seen across the whole history table (both stores). */
+function recentLowestObserved(product) {
+  let min = Infinity;
+  for (const row of product.history) {
+    min = Math.min(min, row.amazon, row.flipkart);
+  }
+  return min === Infinity ? null : min;
+}
+
+function lowestOfMonth(row) {
+  return Math.min(row.amazon, row.flipkart);
+}
+
+function buyIndicator(currentPrice, recentLow) {
+  const pctAbove = ((currentPrice - recentLow) / recentLow) * 100;
+  if (pctAbove <= 2) {
+    return { level: "good", emoji: "🟢", text: "Near recent low — good time to buy", pct: pctAbove };
+  } else if (pctAbove <= 8) {
+    return { level: "normal", emoji: "🟡", text: "Normal price — consider waiting", pct: pctAbove };
+  } else {
+    return { level: "high", emoji: "🔴", text: "High compared with recent low — wait if possible", pct: pctAbove };
+  }
+}
+
+/* =========================================================================
+   RENDERING: HOME / GRID
+========================================================================= */
+
+function renderGrid(filterText) {
+  const q = (filterText || "").trim().toLowerCase();
+  const grid = document.getElementById("productGrid");
+  const list = q ? DEMO_PRODUCTS.filter(p => p.name.toLowerCase().includes(q)) : DEMO_PRODUCTS;
+
+  if (!list.length) {
+    grid.innerHTML = `<div class="empty" style="grid-column: 1 / -1;">No demo products match "${escapeHtml(q)}". Try: smartphone, laptop, headphones, TV.</div>`;
+    return;
+  }
+
+  grid.innerHTML = list.map(p => {
+    const best = lowestCurrent(p);
+    return `
+      <div class="card" onclick="showDetail('${p.id}')">
+        <span class="emoji">${p.emoji}</span>
+        <div class="name">${p.name}</div>
+        <div class="lowest-price">${money(best.price)}</div>
+        <div class="store-tag">on ${best.store === "amazon" ? "Amazon" : "Flipkart"} · demo price</div>
+      </div>
+    `;
+  }).join("");
+}
+
+function escapeHtml(str) {
+  const div = document.createElement("div");
+  div.textContent = str;
+  return div.innerHTML;
+}
+
+/* =========================================================================
+   RENDERING: PRODUCT DETAIL
+========================================================================= */
+
+function renderStoreRows(product, best) {
+  const sorted = [...product.stores].sort((a, b) => a.price - b.price);
+  document.getElementById("storeRows").innerHTML = sorted.map(s => `
+    <div class="store-row ${s.price === best.price ? "best" : ""}">
+      <div class="store-name">
+        <span class="store-dot dot-${s.store}"></span>
+        ${s.store === "amazon" ? "Amazon" : "Flipkart"}
+        ${s.price === best.price ? `<span class="best-pill">LOWEST</span>` : ""}
+      </div>
+      <div>
+        <span class="store-price">${money(s.price)}</span>
+        <span class="demo-btn" onclick="event.stopPropagation(); alert('This is a demo button. Once real store links are connected, this will take you to the actual product page.')">Visit (demo) →</span>
+      </div>
+    </div>
+  `).join("");
+}
+
+function renderChart(history) {
+  const area = document.getElementById("chartArea");
+
+  if (history.length < 2) {
+    area.innerHTML = `<div class="not-enough">Not enough price history yet to draw a chart.</div>`;
+    return;
+  }
+
+  const w = 640, h = 200, pad = 28;
+  const lows = history.map(lowestOfMonth);
+  const min = Math.min(...lows), max = Math.max(...lows);
+  const range = (max - min) || 1;
+
+  const point = (i, v) => {
+    const x = pad + (i / (history.length - 1)) * (w - pad * 2);
+    const y = h - pad - ((v - min) / range) * (h - pad * 2);
+    return [x, y];
+  };
+
+  const points = lows.map((v, i) => point(i, v));
+  const pointsAttr = points.map(([x, y]) => `${x.toFixed(1)},${y.toFixed(1)}`).join(" ");
+
+  const lowestIdx = lows.indexOf(min);
+  const [lx, ly] = points[lowestIdx];
+
+  const labels = history.map((row, i) => {
+    const [x] = points[i];
+    return `<text x="${x}" y="${h - 6}" font-size="10" fill="#6b7180" text-anchor="middle">${row.month.slice(0,3)}</text>`;
+  }).join("");
+
+  area.innerHTML = `
+    <div class="chart-card">
+      <svg viewBox="0 0 ${w} ${h}" preserveAspectRatio="xMidYMid meet">
+        <polyline fill="none" stroke="#4f46e5" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" points="${pointsAttr}" />
+        <circle cx="${lx}" cy="${ly}" r="5" fill="#16a34a" />
+        <text x="${lx}" y="${ly - 12}" font-size="11" fill="#16a34a" text-anchor="middle" font-weight="700">Lowest</text>
+        ${labels}
+      </svg>
+    </div>
+  `;
+}
+
+function renderTable(history) {
+  const area = document.getElementById("tableArea");
+  const lows = history.map(lowestOfMonth);
+  const min = Math.min(...lows);
+
+  area.innerHTML = `
+    <table class="history-table">
+      <thead>
+        <tr><th>Month</th><th>Amazon</th><th>Flipkart</th><th>Lowest</th></tr>
+      </thead>
+      <tbody>
+        ${history.map(row => {
+          const low = lowestOfMonth(row);
+          return `
+            <tr class="${low === min ? "lowest-row" : ""}">
+              <td>${row.month}</td>
+              <td>${money(row.amazon)}</td>
+              <td>${money(row.flipkart)}</td>
+              <td>${money(low)}</td>
+            </tr>
+          `;
+        }).join("")}
+      </tbody>
+    </table>
+    <div style="font-size:0.78rem; color:#6b7180; margin-top:10px;">
+      Showing ${history.length} month${history.length === 1 ? "" : "s"} of observations — PriceLoom never invents missing months.
+    </div>
+  `;
+}
+
+function showDetail(id) {
+  const product = DEMO_PRODUCTS.find(p => p.id === id);
+  if (!product) return;
+
+  const best = lowestCurrent(product);
+  const recentLow = recentLowestObserved(product);
+
+  document.getElementById("pdEmoji").textContent = product.emoji;
+  document.getElementById("pdName").textContent = product.name;
+  document.getElementById("lowestCurrent").textContent = money(best.price);
+
+  renderStoreRows(product, best);
+
+  if (recentLow === null || product.history.length === 0) {
+    document.getElementById("recentLowest").textContent = "—";
+    document.getElementById("diffAmount").textContent = "—";
+    document.getElementById("buyIndicator").className = "indicator normal";
+    document.getElementById("buyIndicator").innerHTML = `Not enough price history yet.`;
+  } else {
+    const diff = best.price - recentLow;
+    const indicator = buyIndicator(best.price, recentLow);
+
+    document.getElementById("recentLowest").textContent = money(recentLow);
+    document.getElementById("diffAmount").textContent = (diff >= 0 ? "+" : "") + money(diff);
+
+    const el = document.getElementById("buyIndicator");
+    el.className = "indicator " + indicator.level;
+    el.innerHTML = `${indicator.emoji} ${indicator.text}
+      <span class="sub">Current price is ${indicator.pct >= 0 ? indicator.pct.toFixed(1) + "% above" : Math.abs(indicator.pct).toFixed(1) + "% below"} the recent lowest observed price.</span>`;
+  }
+
+  renderChart(product.history);
+  renderTable(product.history);
+
+  document.getElementById("homeView").classList.add("hidden");
+  document.getElementById("detailView").classList.remove("hidden");
+  document.getElementById("backBtn").style.display = "inline-flex";
+  window.scrollTo(0, 0);
+}
+
+function showHome() {
+  document.getElementById("detailView").classList.add("hidden");
+  document.getElementById("homeView").classList.remove("hidden");
+  document.getElementById("backBtn").style.display = "none";
+  window.scrollTo(0, 0);
+}
+
+/* =========================================================================
+   INIT
+========================================================================= */
+renderGrid("");
+</script>
+
+</body>
+</html>
