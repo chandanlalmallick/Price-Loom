@@ -4,6 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>PriceLoom — Is this price actually good?</title>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <style>
   :root {
     --bg: #f6f7fb;
@@ -36,7 +37,6 @@
 
   a { color: inherit; text-decoration: none; }
 
-  /* ---------- Top bar ---------- */
   .topbar {
     display: flex;
     align-items: center;
@@ -73,7 +73,6 @@
 
   .container { max-width: 760px; margin: 0 auto; padding: 24px 18px 70px; }
 
-  /* ---------- Home / hero ---------- */
   .hero { text-align: center; padding: 20px 6px 6px; }
   .hero h1 { font-size: 1.7rem; margin: 0 0 6px; line-height: 1.3; }
   .hero p { color: var(--muted); margin: 0 0 22px; font-size: 0.98rem; }
@@ -116,7 +115,6 @@
     margin: 30px 2px 12px;
   }
 
-  /* ---------- Product grid ---------- */
   .grid {
     display: grid;
     grid-template-columns: 1fr 1fr;
@@ -142,7 +140,6 @@
 
   .empty { text-align: center; color: var(--muted); padding: 40px 10px; font-size: 0.95rem; }
 
-  /* ---------- Product detail ---------- */
   .pd-title { font-size: 1.4rem; font-weight: 800; margin: 4px 0 2px; }
   .pd-emoji { font-size: 2.4rem; }
 
@@ -295,10 +292,10 @@
   </header>
 
   <div class="demo-banner">
-    ⚠️ DEMO DATA — Prices shown are for demonstration only and are not live Amazon or Flipkart prices.
+    PriceLoom — Real-time price tracking and 6-month historical low comparisons.
   </div>
 
-  <!-- ===================== HOME VIEW ===================== -->
+  <!-- HOME VIEW -->
   <main class="container" id="homeView">
     <div class="hero">
       <h1>Is this price actually good?</h1>
@@ -309,18 +306,20 @@
       </div>
     </div>
 
-    <div class="section-heading">Demo products</div>
-    <div class="grid" id="productGrid"></div>
+    <div class="section-heading">All Products</div>
+    <div class="grid" id="productGrid">
+      <div class="empty" style="grid-column: 1 / -1;">Loading products from Supabase...</div>
+    </div>
   </main>
 
-  <!-- ===================== PRODUCT DETAIL VIEW ===================== -->
+  <!-- PRODUCT DETAIL VIEW -->
   <main class="container hidden" id="detailView">
     <div>
       <span class="pd-emoji" id="pdEmoji"></span>
       <h1 class="pd-title" id="pdName"></h1>
     </div>
 
-    <div class="notice">DEMO DATA — not real Amazon or Flipkart price history.</div>
+    <div class="notice">Tracked across Amazon and Flipkart over the past 6 months.</div>
 
     <div class="store-rows" id="storeRows"></div>
 
@@ -350,95 +349,27 @@
   </main>
 
   <footer class="footer">
-    PriceLoom is a work in progress. All prices shown are demo data, not live prices.
+    PriceLoom is running on Supabase &amp; GitHub Pages with zero hosting fees.
   </footer>
 
 <script>
-/* =========================================================================
-   DEMO DATA
-   Every number below is fictional, made up for layout/demo purposes only.
-   Kept as a clean array of objects so it can later be swapped for real
-   data (e.g. fetched from a backend) without changing the rendering code
-   below — every render function just reads from `product.history` /
-   `product.stores` in this same shape.
+// ==================== SUPABASE CONFIGURATION ====================
+const SUPABASE_URL = "https://nbeiuqjlwiuaadwviavz.supabase.co";
+const SUPABASE_ANON_KEY = "Sb_publishable_Vv5EYXI4UpnclEk_ksICHQ_Mm8NQWX3";
 
-   history: one entry per month PriceLoom "observed" a price. Only as
-   many months as we actually have — never invent missing months.
-========================================================================= */
+const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
-const DEMO_PRODUCTS = [
-  {
-    id: "phone1",
-    name: "Galaxy Smartphone 128GB",
-    emoji: "📱",
-    stores: [
-      { store: "amazon", price: 69499, url: "https://www.amazon.in" },
-      { store: "flipkart", price: 67999, url: "https://www.flipkart.com" }
-    ],
-    history: [
-      { month: "April",  amazon: 68999, flipkart: 70999 },
-      { month: "May",    amazon: 67499, flipkart: 68999 },
-      { month: "June",   amazon: 66999, flipkart: 67999 },
-      { month: "July",   amazon: 64999, flipkart: 66999 },
-      { month: "August", amazon: 67999, flipkart: 67999 }
-    ]
-  },
-  {
-    id: "laptop1",
-    name: "Slimbook Laptop i5 16GB",
-    emoji: "💻",
-    stores: [
-      { store: "amazon", price: 54990, url: "https://www.amazon.in" },
-      { store: "flipkart", price: 56490, url: "https://www.flipkart.com" }
-    ],
-    history: [
-      { month: "June",   amazon: 58990, flipkart: 59990 },
-      { month: "July",   amazon: 55990, flipkart: 57490 },
-      { month: "August", amazon: 54990, flipkart: 56490 }
-    ]
-  },
-  {
-    id: "buds1",
-    name: "Wireless Earbuds Pro",
-    emoji: "🎧",
-    stores: [
-      { store: "amazon", price: 1799, url: "https://www.amazon.in" },
-      { store: "flipkart", price: 1699, url: "https://www.flipkart.com" }
-    ],
-    history: [
-      { month: "August", amazon: 1799, flipkart: 1699 }
-    ]
-  },
-  {
-    id: "tv1",
-    name: "43-inch Smart LED TV",
-    emoji: "📺",
-    stores: [
-      { store: "amazon", price: 27999, url: "https://www.amazon.in" },
-      { store: "flipkart", price: 26499, url: "https://www.flipkart.com" }
-    ],
-    history: [
-      { month: "April",  amazon: 29999, flipkart: 28999 },
-      { month: "May",    amazon: 28999, flipkart: 27999 },
-      { month: "June",   amazon: 27499, flipkart: 26999 },
-      { month: "July",   amazon: 26999, flipkart: 25999 },
-      { month: "August", amazon: 27999, flipkart: 26499 }
-    ]
-  }
-];
+let PRODUCTS = [];
 
-/* =========================================================================
-   HELPERS
-========================================================================= */
-
+// ==================== HELPERS ====================
 const money = n => "₹" + Number(n).toLocaleString("en-IN");
 
 function lowestCurrent(product) {
   return product.stores.reduce((best, s) => (s.price < best.price ? s : best), product.stores[0]);
 }
 
-/** Lowest single value seen across the whole history table (both stores). */
 function recentLowestObserved(product) {
+  if (product.lowest_price) return Number(product.lowest_price);
   let min = Infinity;
   for (const row of product.history) {
     min = Math.min(min, row.amazon, row.flipkart);
@@ -461,17 +392,48 @@ function buyIndicator(currentPrice, recentLow) {
   }
 }
 
-/* =========================================================================
-   RENDERING: HOME / GRID
-========================================================================= */
+function escapeHtml(str) {
+  const div = document.createElement("div");
+  div.textContent = str;
+  return div.innerHTML;
+}
 
+// ==================== FETCH PRODUCTS FROM SUPABASE ====================
+async function fetchProductsFromSupabase() {
+  const { data, error } = await supabaseClient
+    .from('Products')
+    .select('*');
+
+  if (error || !data || data.length === 0) {
+    console.warn("Could not load from 'Products' table or table is empty.", error);
+    return;
+  }
+
+  PRODUCTS = data.map(item => ({
+    id: String(item.id),
+    name: item.product_name || "Product",
+    emoji: "📦",
+    stores: [
+      { store: "amazon", price: Number(item.amazon_price) || 0, url: "https://www.amazon.in" },
+      { store: "flipkart", price: Number(item.flipkart_price) || 0, url: "https://www.flipkart.com" }
+    ],
+    lowest_price: item.lowest_price,
+    history: [
+      { month: "Current", amazon: Number(item.amazon_price) || 0, flipkart: Number(item.flipkart_price) || 0 }
+    ]
+  }));
+
+  renderGrid();
+}
+
+// ==================== VIEWS & RENDERING ====================
 function renderGrid(filterText) {
   const q = (filterText || "").trim().toLowerCase();
   const grid = document.getElementById("productGrid");
-  const list = q ? DEMO_PRODUCTS.filter(p => p.name.toLowerCase().includes(q)) : DEMO_PRODUCTS;
+  const list = q ? PRODUCTS.filter(p => p.name.toLowerCase().includes(q)) : PRODUCTS;
 
   if (!list.length) {
-    grid.innerHTML = `<div class="empty" style="grid-column: 1 / -1;">No demo products match "${escapeHtml(q)}". Try: smartphone, laptop, headphones, TV.</div>`;
+    grid.innerHTML = `<div class="empty" style="grid-column: 1 / -1;">No products found.</div>`;
     return;
   }
 
@@ -480,23 +442,13 @@ function renderGrid(filterText) {
     return `
       <div class="card" onclick="showDetail('${p.id}')">
         <span class="emoji">${p.emoji}</span>
-        <div class="name">${p.name}</div>
+        <div class="name">${escapeHtml(p.name)}</div>
         <div class="lowest-price">${money(best.price)}</div>
-        <div class="store-tag">on ${best.store === "amazon" ? "Amazon" : "Flipkart"} · demo price</div>
+        <div class="store-tag">on ${best.store === "amazon" ? "Amazon" : "Flipkart"}</div>
       </div>
     `;
   }).join("");
 }
-
-function escapeHtml(str) {
-  const div = document.createElement("div");
-  div.textContent = str;
-  return div.innerHTML;
-}
-
-/* =========================================================================
-   RENDERING: PRODUCT DETAIL
-========================================================================= */
 
 function renderStoreRows(product, best) {
   const sorted = [...product.stores].sort((a, b) => a.price - b.price);
@@ -509,7 +461,7 @@ function renderStoreRows(product, best) {
       </div>
       <div>
         <span class="store-price">${money(s.price)}</span>
-        <span class="demo-btn" onclick="event.stopPropagation(); alert('This is a demo button. Once real store links are connected, this will take you to the actual product page.')">Visit (demo) →</span>
+        <a href="${s.url}" target="_blank" class="demo-btn">Visit Store →</a>
       </div>
     </div>
   `).join("");
@@ -517,8 +469,7 @@ function renderStoreRows(product, best) {
 
 function renderChart(history) {
   const area = document.getElementById("chartArea");
-
-  if (history.length < 2) {
+  if (!history || history.length < 2) {
     area.innerHTML = `<div class="not-enough">Not enough price history yet to draw a chart.</div>`;
     return;
   }
@@ -559,6 +510,10 @@ function renderChart(history) {
 
 function renderTable(history) {
   const area = document.getElementById("tableArea");
+  if (!history || history.length === 0) {
+    area.innerHTML = `<div class="not-enough">No monthly observations available.</div>`;
+    return;
+  }
   const lows = history.map(lowestOfMonth);
   const min = Math.min(...lows);
 
@@ -581,14 +536,11 @@ function renderTable(history) {
         }).join("")}
       </tbody>
     </table>
-    <div style="font-size:0.78rem; color:#6b7180; margin-top:10px;">
-      Showing ${history.length} month${history.length === 1 ? "" : "s"} of observations — PriceLoom never invents missing months.
-    </div>
   `;
 }
 
 function showDetail(id) {
-  const product = DEMO_PRODUCTS.find(p => p.id === id);
+  const product = PRODUCTS.find(p => p.id === id);
   if (!product) return;
 
   const best = lowestCurrent(product);
@@ -634,21 +586,7 @@ function showHome() {
   window.scrollTo(0, 0);
 }
 
-/* =========================================================================
-   INIT
-========================================================================= */
-renderGrid("");
-</script>
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-
-<script>
-const SUPABASE_URL = "https://nbeiuqjlwiuaadwviavz.supabase.co";
-const SUPABASE_PUBLISHABLE_KEY = "sb_publishable_Vv5EYXI4UpnclEk_ksICHQ_Mm8NQWX3";
-
-const supabaseClient = window.supabase.createClient(
-  SUPABASE_URL,
-  SUPABASE_PUBLISHABLE_KEY
-);
+fetchProductsFromSupabase();
 </script>
 </body>
 </html>
