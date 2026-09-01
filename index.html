@@ -3,532 +3,703 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>PriceLoom — Is this price actually good?</title>
+
+<title>PriceLoom — Compare prices before you buy</title>
+
 <style>
-  :root {
-    --bg: #f6f7fb;
-    --card: #ffffff;
-    --border: #e6e8ef;
-    --text: #14161c;
-    --muted: #6b7180;
-    --accent: #4f46e5;
-    --accent-light: #eef0fe;
-    --green: #16a34a;
-    --green-bg: #ecfdf3;
-    --yellow: #b45309;
-    --yellow-bg: #fffbeb;
-    --red: #dc2626;
-    --red-bg: #fef2f2;
-    --amazon: #ff9900;
-    --flipkart: #2874f0;
-    --radius: 16px;
-  }
+:root {
+  --bg:#f6f7fb;
+  --card:#fff;
+  --border:#e6e8ef;
+  --text:#14161c;
+  --muted:#6b7180;
+  --accent:#4f46e5;
+  --green:#16a34a;
+  --green-bg:#ecfdf3;
+  --amazon:#ff9900;
+  --flipkart:#2874f0;
+  --radius:16px;
+}
 
-  * { box-sizing: border-box; }
+* {
+  box-sizing:border-box;
+}
 
-  body {
-    margin: 0;
-    background: var(--bg);
-    color: var(--text);
-    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-    -webkit-font-smoothing: antialiased;
-  }
+body {
+  margin:0;
+  background:var(--bg);
+  color:var(--text);
+  font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Arial,sans-serif;
+}
 
-  a { color: inherit; text-decoration: none; }
+button,
+input {
+  font:inherit;
+}
 
-  .topbar {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding: 16px 20px;
-    background: var(--card);
-    border-bottom: 1px solid var(--border);
-    position: sticky;
-    top: 0;
-    z-index: 20;
-  }
-  .brand { display: flex; align-items: center; gap: 8px; font-weight: 800; font-size: 1.25rem; cursor: pointer; }
-  .brand .dot { width: 10px; height: 10px; border-radius: 50%; background: var(--accent); }
-  .back-btn {
-    display: none;
-    align-items: center;
-    gap: 6px;
-    font-weight: 600;
-    color: var(--accent);
-    font-size: 0.9rem;
-    cursor: pointer;
-    background: none;
-    border: none;
-  }
+a {
+  text-decoration:none;
+  color:inherit;
+}
 
-  .banner {
-    background: #1e1b2e;
-    color: #d9c8ff;
-    text-align: center;
-    font-size: 0.78rem;
-    padding: 8px 16px;
-  }
+.topbar {
+  padding:16px 20px;
+  background:var(--card);
+  border-bottom:1px solid var(--border);
+  position:sticky;
+  top:0;
+  z-index:10;
+}
 
-  .container { max-width: 760px; margin: 0 auto; padding: 24px 18px 70px; }
+.brand {
+  display:flex;
+  align-items:center;
+  gap:8px;
+  font-weight:800;
+  font-size:1.25rem;
+  cursor:pointer;
+}
 
-  .hero { text-align: center; padding: 20px 6px 6px; }
-  .hero h1 { font-size: 1.7rem; margin: 0 0 6px; line-height: 1.3; }
-  .hero p { color: var(--muted); margin: 0 0 22px; font-size: 0.98rem; }
+.dot {
+  width:10px;
+  height:10px;
+  border-radius:50%;
+  background:var(--accent);
+}
 
-  .search-box {
-    display: flex;
-    gap: 8px;
-    background: var(--card);
-    border: 1px solid var(--border);
-    border-radius: 14px;
-    padding: 6px;
-    box-shadow: 0 1px 2px rgba(20,22,28,0.04);
-  }
-  .search-box input {
-    flex: 1;
-    border: none;
-    outline: none;
-    padding: 12px 10px;
-    font-size: 1rem;
-    background: transparent;
-    color: var(--text);
-  }
-  .search-box button {
-    border: none;
-    background: var(--accent);
-    color: #fff;
-    padding: 0 20px;
-    border-radius: 10px;
-    font-weight: 700;
-    font-size: 0.95rem;
-    cursor: pointer;
-  }
+.banner {
+  background:#1e1b2e;
+  color:#ddd6fe;
+  text-align:center;
+  padding:9px 15px;
+  font-size:.78rem;
+}
 
-  .section-heading {
-    font-size: 0.85rem;
-    font-weight: 700;
-    color: var(--muted);
-    text-transform: uppercase;
-    letter-spacing: 0.04em;
-    margin: 30px 2px 12px;
-  }
+.container {
+  max-width:900px;
+  margin:auto;
+  padding:25px 18px 70px;
+}
 
+.hero {
+  text-align:center;
+  padding:20px 5px;
+}
+
+.hero h1 {
+  font-size:clamp(1.7rem,5vw,2.3rem);
+  margin:0 0 8px;
+}
+
+.hero p {
+  color:var(--muted);
+  margin:0 0 22px;
+}
+
+.search-box {
+  display:flex;
+  gap:8px;
+  background:var(--card);
+  border:1px solid var(--border);
+  border-radius:15px;
+  padding:6px;
+  box-shadow:0 2px 8px rgba(0,0,0,.04);
+}
+
+.search-box input {
+  flex:1;
+  min-width:0;
+  border:0;
+  outline:0;
+  padding:13px 10px;
+  background:transparent;
+}
+
+.search-box button {
+  border:0;
+  background:var(--accent);
+  color:white;
+  padding:0 22px;
+  border-radius:10px;
+  font-weight:700;
+  cursor:pointer;
+}
+
+.section-heading {
+  font-size:.85rem;
+  font-weight:800;
+  color:var(--muted);
+  text-transform:uppercase;
+  letter-spacing:.04em;
+  margin:28px 2px 12px;
+}
+
+.grid {
+  display:grid;
+  grid-template-columns:repeat(2,minmax(0,1fr));
+  gap:12px;
+}
+
+.card {
+  background:var(--card);
+  border:1px solid var(--border);
+  border-radius:var(--radius);
+  padding:16px;
+  transition:.15s;
+}
+
+.card:hover {
+  transform:translateY(-2px);
+  box-shadow:0 8px 20px rgba(0,0,0,.06);
+}
+
+.emoji {
+  font-size:2.1rem;
+  display:block;
+  margin-bottom:8px;
+}
+
+.name {
+  font-weight:750;
+  line-height:1.35;
+  margin-bottom:8px;
+}
+
+.category {
+  color:var(--muted);
+  font-size:.75rem;
+  margin-bottom:12px;
+}
+
+.price {
+  font-size:1.15rem;
+  font-weight:800;
+  color:var(--accent);
+}
+
+.store {
+  color:var(--muted);
+  font-size:.72rem;
+}
+
+.buttons {
+  display:flex;
+  gap:8px;
+  margin-top:14px;
+}
+
+.store-button {
+  flex:1;
+  text-align:center;
+  padding:9px 5px;
+  border-radius:9px;
+  font-size:.75rem;
+  font-weight:800;
+}
+
+.amazon {
+  background:#fff3df;
+  color:#a65d00;
+}
+
+.flipkart {
+  background:#eaf2ff;
+  color:#1458bd;
+}
+
+.search-result {
+  background:var(--card);
+  border:1px solid var(--border);
+  border-radius:16px;
+  padding:18px;
+  margin-bottom:12px;
+}
+
+.search-result h3 {
+  margin:0 0 8px;
+}
+
+.search-result p {
+  color:var(--muted);
+  font-size:.85rem;
+  margin:0 0 15px;
+}
+
+.big-buttons {
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:10px;
+}
+
+.big-button {
+  padding:14px;
+  border-radius:11px;
+  text-align:center;
+  font-weight:800;
+}
+
+.empty {
+  text-align:center;
+  color:var(--muted);
+  padding:35px 10px;
+}
+
+.notice {
+  background:#fff;
+  border:1px solid var(--border);
+  border-radius:14px;
+  padding:15px;
+  color:var(--muted);
+  font-size:.82rem;
+  margin-bottom:15px;
+}
+
+.footer {
+  text-align:center;
+  color:var(--muted);
+  font-size:.78rem;
+  padding:30px 15px 45px;
+}
+
+@media(max-width:500px) {
   .grid {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 12px;
-  }
-  @media (min-width: 620px) {
-    .grid { grid-template-columns: 1fr 1fr; gap: 14px; }
+    grid-template-columns:1fr 1fr;
   }
 
-  .card {
-    background: var(--card);
-    border: 1px solid var(--border);
-    border-radius: var(--radius);
-    padding: 16px;
-    cursor: pointer;
-    transition: transform 0.12s ease, box-shadow 0.12s ease;
+  .search-box button {
+    padding:0 15px;
   }
-  .card:hover { transform: translateY(-2px); box-shadow: 0 8px 20px rgba(20,22,28,0.06); }
-  .card .emoji { font-size: 2rem; margin-bottom: 8px; display: block; }
-  .card .name { font-weight: 700; font-size: 0.95rem; margin-bottom: 6px; }
-  .card .lowest-price { font-size: 1.15rem; font-weight: 800; color: var(--accent); }
-  .card .store-tag { font-size: 0.7rem; color: var(--muted); margin-top: 2px; }
-
-  .empty { text-align: center; color: var(--muted); padding: 40px 10px; font-size: 0.95rem; }
-
-  .pd-title { font-size: 1.4rem; font-weight: 800; margin: 4px 0 2px; }
-  .pd-emoji { font-size: 2.4rem; }
-
-  .store-rows { display: flex; flex-direction: column; gap: 10px; margin: 16px 0 22px; }
-  .store-row {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    background: var(--card);
-    border: 1px solid var(--border);
-    border-radius: 14px;
-    padding: 14px 16px;
-  }
-  .store-row.best { border-color: var(--green); background: var(--green-bg); }
-  .store-name { display: flex; align-items: center; gap: 8px; font-weight: 700; font-size: 0.95rem; }
-  .store-dot { width: 9px; height: 9px; border-radius: 50%; }
-  .dot-amazon { background: var(--amazon); }
-  .dot-flipkart { background: var(--flipkart); }
-  .store-price { font-weight: 800; font-size: 1.1rem; }
-  .best-pill {
-    font-size: 0.62rem;
-    background: var(--green);
-    color: #fff;
-    padding: 2px 8px;
-    border-radius: 20px;
-    font-weight: 800;
-    margin-left: 8px;
-  }
-  .store-link {
-    font-size: 0.75rem;
-    color: var(--accent);
-    font-weight: 700;
-    background: var(--accent-light);
-    padding: 6px 10px;
-    border-radius: 8px;
-    margin-left: 10px;
-  }
-
-  .lowest-banner {
-    background: var(--accent);
-    color: #fff;
-    border-radius: 16px;
-    padding: 18px 20px;
-    text-align: center;
-    margin-bottom: 20px;
-  }
-  .lowest-banner .label { font-size: 0.75rem; opacity: 0.85; text-transform: uppercase; letter-spacing: 0.05em; font-weight: 700; }
-  .lowest-banner .amount { font-size: 2rem; font-weight: 800; margin-top: 4px; }
-
-  .summary-grid {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 10px;
-    margin-bottom: 6px;
-  }
-  .summary-card {
-    background: var(--card);
-    border: 1px solid var(--border);
-    border-radius: 14px;
-    padding: 14px;
-  }
-  .summary-card .label { font-size: 0.72rem; color: var(--muted); font-weight: 700; text-transform: uppercase; letter-spacing: 0.03em; }
-  .summary-card .value { font-size: 1.2rem; font-weight: 800; margin-top: 4px; }
-
-  .indicator {
-    margin-top: 16px;
-    padding: 16px;
-    border-radius: 14px;
-    font-weight: 700;
-    font-size: 1rem;
-    text-align: center;
-  }
-  .indicator.good { background: var(--green-bg); color: var(--green); }
-  .indicator.normal { background: var(--yellow-bg); color: var(--yellow); }
-  .indicator.high { background: var(--red-bg); color: var(--red); }
-  .indicator .sub { display: block; font-weight: 500; font-size: 0.8rem; margin-top: 4px; opacity: 0.85; }
-
-  .chart-card {
-    background: var(--card);
-    border: 1px solid var(--border);
-    border-radius: 16px;
-    padding: 16px 12px;
-  }
-  .chart-card svg { width: 100%; height: auto; display: block; }
-
-  table.history-table {
-    width: 100%;
-    border-collapse: collapse;
-    background: var(--card);
-    border: 1px solid var(--border);
-    border-radius: 14px;
-    overflow: hidden;
-    font-size: 0.85rem;
-  }
-  table.history-table th, table.history-table td {
-    text-align: left;
-    padding: 10px 12px;
-    border-bottom: 1px solid var(--border);
-  }
-  table.history-table th {
-    color: var(--muted);
-    font-weight: 700;
-    font-size: 0.72rem;
-    text-transform: uppercase;
-    background: #fafafd;
-  }
-  table.history-table tr:last-child td { border-bottom: none; }
-  table.history-table tr.lowest-row td:last-child { color: var(--green); font-weight: 800; }
-
-  .footer {
-    text-align: center;
-    color: var(--muted);
-    font-size: 0.78rem;
-    padding: 26px 16px 40px;
-  }
-
-  .hidden { display: none !important; }
+}
 </style>
 </head>
+
 <body>
 
-  <header class="topbar">
-    <button class="back-btn" id="backBtn" onclick="showHome()">← Back</button>
-    <div class="brand" onclick="showHome()">
-      <span class="dot"></span> PriceLoom
-    </div>
-    <span></span>
-  </header>
+<header class="topbar">
+  <div class="brand" onclick="goHome()">
+    <span class="dot"></span>
+    PriceLoom
+  </div>
+</header>
 
-  <div class="banner">
-    PriceLoom — Real-time price tracking and 6-month historical low comparisons.
+<div class="banner">
+  Compare prices before you buy
+</div>
+
+<main class="container">
+
+  <section class="hero">
+    <h1>Is this price actually good?</h1>
+
+    <p>
+      Search products and compare Amazon & Flipkart.
+    </p>
+
+    <div class="search-box">
+      <input
+        id="searchInput"
+        type="search"
+        placeholder="Search any product..."
+        autocomplete="off"
+      >
+
+      <button onclick="searchProducts()">
+        Search
+      </button>
+    </div>
+  </section>
+
+  <div id="notice"></div>
+
+  <div class="section-heading" id="heading">
+    All Products
   </div>
 
-  <main class="container" id="homeView">
-    <div class="hero">
-      <h1>Is this price actually good?</h1>
-      <p>Compare Amazon &amp; Flipkart, and see the recent lowest observed price.</p>
-      <div class="search-box">
-        <input type="text" id="searchInput" placeholder="Search: smartphone, laptop, earbuds, TV..." oninput="renderGrid(this.value)">
-        <button onclick="renderGrid(document.getElementById('searchInput').value)">Search</button>
-      </div>
-    </div>
+  <div class="grid" id="productGrid"></div>
 
-    <div class="section-heading">All Products</div>
-    <div class="grid" id="productGrid"></div>
-  </main>
+</main>
 
-  <main class="container hidden" id="detailView">
-    <div>
-      <span class="pd-emoji" id="pdEmoji"></span>
-      <h1 class="pd-title" id="pdName"></h1>
-    </div>
-
-    <div class="store-rows" id="storeRows"></div>
-
-    <div class="lowest-banner">
-      <div class="label">Lowest current price</div>
-      <div class="amount" id="lowestCurrent"></div>
-    </div>
-
-    <div class="summary-grid">
-      <div class="summary-card">
-        <div class="label">6-Month lowest observed</div>
-        <div class="value" id="recentLowest"></div>
-      </div>
-      <div class="summary-card">
-        <div class="label">Difference</div>
-        <div class="value" id="diffAmount"></div>
-      </div>
-    </div>
-
-    <div class="indicator" id="buyIndicator"></div>
-
-    <div class="section-heading">6-Month Price history</div>
-    <div id="chartArea"></div>
-
-    <div class="section-heading">Monthly lowest breakdown</div>
-    <div id="tableArea"></div>
-  </main>
-
-  <footer class="footer">
-    PriceLoom is running completely free on GitHub Pages.
-  </footer>
+<footer class="footer">
+  PriceLoom — free price comparison on GitHub Pages
+</footer>
 
 <script>
+
 let PRODUCTS = [];
 
-const money = n => "₹" + Number(n).toLocaleString("en-IN");
+/* -----------------------------
+   HELPERS
+----------------------------- */
 
-function lowestCurrent(product) {
-  return product.stores.reduce((best, s) => (s.price < best.price ? s : best), product.stores[0]);
-}
+function money(value) {
 
-function recentLowestObserved(product) {
-  let min = Infinity;
-  for (const row of product.history) {
-    min = Math.min(min, row.amazon, row.flipkart);
+  if (value === null || value === undefined || value === "") {
+    return "Price unavailable";
   }
-  return min === Infinity ? lowestCurrent(product).price : min;
+
+  return "₹" + Number(value).toLocaleString("en-IN");
 }
 
-function lowestOfMonth(row) {
-  return Math.min(row.amazon, row.flipkart);
+
+function amazonSearch(name) {
+
+  return "https://www.amazon.in/s?k=" +
+    encodeURIComponent(name);
 }
 
-function buyIndicator(currentPrice, recentLow) {
-  const pctAbove = ((currentPrice - recentLow) / recentLow) * 100;
-  if (pctAbove <= 2) {
-    return { level: "good", emoji: "🟢", text: "Near 6-month low — good time to buy", pct: pctAbove };
-  } else if (pctAbove <= 8) {
-    return { level: "normal", emoji: "🟡", text: "Normal price — consider waiting", pct: pctAbove };
-  } else {
-    return { level: "high", emoji: "🔴", text: "High compared with 6-month low — wait if possible", pct: pctAbove };
-  }
+
+function flipkartSearch(name) {
+
+  return "https://www.flipkart.com/search?q=" +
+    encodeURIComponent(name);
 }
 
-function escapeHtml(str) {
+
+function escapeHTML(text) {
+
   const div = document.createElement("div");
-  div.textContent = str;
+
+  div.textContent = text;
+
   return div.innerHTML;
 }
 
+
+/* -----------------------------
+   LOAD PRODUCTS
+----------------------------- */
+
 async function loadProducts() {
+
   try {
-    const res = await fetch('./products.json');
-    const raw = await res.json();
-    PRODUCTS = raw.map(item => ({
-      id: item.id,
-      name: item.name,
-      emoji: item.emoji || "📦",
-      stores: [
-        { store: "amazon", price: item.current_amazon, url: `https://www.amazon.in/s?k=${encodeURIComponent(item.name)}` },
-        { store: "flipkart", price: item.current_flipkart, url: `https://www.flipkart.com/search?q=${encodeURIComponent(item.name)}` }
-      ],
-      history: item.history || []
-    }));
-    renderGrid();
-  } catch (err) {
-    document.getElementById("productGrid").innerHTML = `<div class="empty" style="grid-column: 1 / -1;">Failed to load products.json.</div>`;
-  }
-}
 
-function renderGrid(filterText) {
-  const q = (filterText || "").trim().toLowerCase();
-  const grid = document.getElementById("productGrid");
-  const list = q ? PRODUCTS.filter(p => p.name.toLowerCase().includes(q)) : PRODUCTS;
+    const response = await fetch("./products.json", {
+      cache:"no-store"
+    });
 
-  if (!list.length) {
-    grid.innerHTML = `<div class="empty" style="grid-column: 1 / -1;">No products match "${escapeHtml(q)}".</div>`;
-    return;
-  }
+    if (!response.ok) {
+      throw new Error("products.json failed");
+    }
 
-  grid.innerHTML = list.map(p => {
-    const best = lowestCurrent(p);
-    return `
-      <div class="card" onclick="showDetail('${p.id}')">
-        <span class="emoji">${p.emoji}</span>
-        <div class="name">${escapeHtml(p.name)}</div>
-        <div class="lowest-price">${money(best.price)}</div>
-        <div class="store-tag">on ${best.store === "amazon" ? "Amazon" : "Flipkart"}</div>
+    PRODUCTS = await response.json();
+
+    renderProducts(PRODUCTS);
+
+  } catch(error) {
+
+    console.error(error);
+
+    document.getElementById("productGrid").innerHTML = `
+      <div class="empty">
+        Product catalog could not be loaded.
       </div>
     `;
-  }).join("");
+  }
 }
 
-function renderStoreRows(product, best) {
-  const sorted = [...product.stores].sort((a, b) => a.price - b.price);
-  document.getElementById("storeRows").innerHTML = sorted.map(s => `
-    <div class="store-row ${s.price === best.price ? "best" : ""}">
-      <div class="store-name">
-        <span class="store-dot dot-${s.store}"></span>
-        ${s.store === "amazon" ? "Amazon" : "Flipkart"}
-        ${s.price === best.price ? `<span class="best-pill">LOWEST</span>` : ""}
-      </div>
-      <div>
-        <span class="store-price">${money(s.price)}</span>
-        <a href="${s.url}" target="_blank" class="store-link">Search Store →</a>
-      </div>
-    </div>
-  `).join("");
-}
 
-function renderChart(history) {
-  const area = document.getElementById("chartArea");
-  if (!history || history.length < 2) {
-    area.innerHTML = `<div class="empty">Not enough history to draw a chart.</div>`;
+/* -----------------------------
+   SEARCH
+----------------------------- */
+
+function searchProducts() {
+
+  const input =
+    document.getElementById("searchInput");
+
+  const query =
+    input.value.trim().toLowerCase();
+
+  if (!query) {
+
+    renderProducts(PRODUCTS);
+
+    document.getElementById("heading").textContent =
+      "All Products";
+
+    document.getElementById("notice").innerHTML = "";
+
     return;
   }
 
-  const w = 640, h = 200, pad = 28;
-  const lows = history.map(lowestOfMonth);
-  const min = Math.min(...lows), max = Math.max(...lows);
-  const range = (max - min) || 1;
+  const words = query
+    .split(/\s+/)
+    .filter(Boolean);
 
-  const point = (i, v) => {
-    const x = pad + (i / (history.length - 1)) * (w - pad * 2);
-    const y = h - pad - ((v - min) / range) * (h - pad * 2);
-    return [x, y];
-  };
+  const results = PRODUCTS.filter(product => {
 
-  const points = lows.map((v, i) => point(i, v));
-  const pointsAttr = points.map(([x, y]) => `${x.toFixed(1)},${y.toFixed(1)}`).join(" ");
-  const lowestIdx = lows.indexOf(min);
-  const [lx, ly] = points[lowestIdx];
+    const searchable = [
 
-  const labels = history.map((row, i) => {
-    const [x] = points[i];
-    return `<text x="${x}" y="${h - 6}" font-size="10" fill="#6b7180" text-anchor="middle">${row.month.slice(0,3)}</text>`;
-  }).join("");
+      product.name,
+      product.category,
+      product.brand,
+      ...(product.tags || [])
 
-  area.innerHTML = `
-    <div class="chart-card">
-      <svg viewBox="0 0 ${w} ${h}" preserveAspectRatio="xMidYMid meet">
-        <polyline fill="none" stroke="#4f46e5" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" points="${pointsAttr}" />
-        <circle cx="${lx}" cy="${ly}" r="5" fill="#16a34a" />
-        <text x="${lx}" y="${ly - 12}" font-size="11" fill="#16a34a" text-anchor="middle" font-weight="700">Lowest</text>
-        ${labels}
-      </svg>
+    ]
+    .filter(Boolean)
+    .join(" ")
+    .toLowerCase();
+
+    return words.every(word =>
+      searchable.includes(word)
+    );
+  });
+
+
+  document.getElementById("heading").textContent =
+    "Search results";
+
+
+  /*
+    IMPORTANT:
+    Even when our local catalog does not contain
+    the product, we still provide marketplace search.
+  */
+
+  document.getElementById("notice").innerHTML = `
+
+    <div class="notice">
+
+      <strong>Searching for:</strong>
+      ${escapeHTML(input.value)}
+
+      <br><br>
+
+      PriceLoom can search Amazon and Flipkart
+      even when this product is not yet in our
+      local catalog.
+
+    </div>
+
+    <div class="search-result">
+
+      <h3>
+        ${escapeHTML(input.value)}
+      </h3>
+
+      <p>
+        Search this product directly on both stores.
+      </p>
+
+      <div class="big-buttons">
+
+        <a
+          class="big-button amazon"
+          href="${amazonSearch(input.value)}"
+          target="_blank"
+          rel="noopener"
+        >
+          🛒 Amazon
+        </a>
+
+        <a
+          class="big-button flipkart"
+          href="${flipkartSearch(input.value)}"
+          target="_blank"
+          rel="noopener"
+        >
+          🛍️ Flipkart
+        </a>
+
+      </div>
+
     </div>
   `;
+
+
+  if (results.length) {
+
+    renderProducts(results);
+
+  } else {
+
+    document.getElementById("productGrid").innerHTML = "";
+
+  }
 }
 
-function renderTable(history) {
-  const area = document.getElementById("tableArea");
-  const lows = history.map(lowestOfMonth);
-  const min = Math.min(...lows);
 
-  area.innerHTML = `
-    <table class="history-table">
-      <thead>
-        <tr><th>Month</th><th>Amazon</th><th>Flipkart</th><th>Lowest</th></tr>
-      </thead>
-      <tbody>
-        ${history.map(row => {
-          const low = lowestOfMonth(row);
-          return `
-            <tr class="${low === min ? "lowest-row" : ""}">
-              <td>${row.month}</td>
-              <td>${money(row.amazon)}</td>
-              <td>${money(row.flipkart)}</td>
-              <td>${money(low)}</td>
-            </tr>
-          `;
-        }).join("")}
-      </tbody>
-    </table>
-  `;
+/* -----------------------------
+   RENDER LOCAL PRODUCTS
+----------------------------- */
+
+function renderProducts(list) {
+
+  const grid =
+    document.getElementById("productGrid");
+
+  if (!list.length) {
+
+    grid.innerHTML = `
+      <div class="empty"
+           style="grid-column:1/-1">
+
+        No catalog products yet.
+
+      </div>
+    `;
+
+    return;
+  }
+
+
+  grid.innerHTML = list.map(product => {
+
+    const amazon =
+      Number(product.current_amazon);
+
+    const flipkart =
+      Number(product.current_flipkart);
+
+    const validAmazon =
+      Number.isFinite(amazon) && amazon > 0;
+
+    const validFlipkart =
+      Number.isFinite(flipkart) && flipkart > 0;
+
+
+    let bestPrice = null;
+    let bestStore = "";
+
+
+    if (validAmazon && validFlipkart) {
+
+      if (amazon <= flipkart) {
+
+        bestPrice = amazon;
+        bestStore = "Amazon";
+
+      } else {
+
+        bestPrice = flipkart;
+        bestStore = "Flipkart";
+
+      }
+
+    } else if (validAmazon) {
+
+      bestPrice = amazon;
+      bestStore = "Amazon";
+
+    } else if (validFlipkart) {
+
+      bestPrice = flipkart;
+      bestStore = "Flipkart";
+    }
+
+
+    return `
+
+      <article class="card">
+
+        <span class="emoji">
+          ${escapeHTML(product.emoji || "📦")}
+        </span>
+
+        <div class="name">
+          ${escapeHTML(product.name)}
+        </div>
+
+        <div class="category">
+          ${escapeHTML(product.category || "Product")}
+        </div>
+
+        ${
+          bestPrice !== null
+
+          ? `
+
+            <div class="price">
+              ${money(bestPrice)}
+            </div>
+
+            <div class="store">
+              Best stored price: ${bestStore}
+            </div>
+
+          `
+
+          : `
+
+            <div class="price">
+              Price unavailable
+            </div>
+
+          `
+        }
+
+
+        <div class="buttons">
+
+          <a
+            class="store-button amazon"
+            href="${amazonSearch(product.name)}"
+            target="_blank"
+            rel="noopener"
+          >
+            Amazon
+          </a>
+
+          <a
+            class="store-button flipkart"
+            href="${flipkartSearch(product.name)}"
+            target="_blank"
+            rel="noopener"
+          >
+            Flipkart
+          </a>
+
+        </div>
+
+      </article>
+    `;
+
+  }).join("");
 }
 
-function showDetail(id) {
-  const product = PRODUCTS.find(p => p.id === id);
-  if (!product) return;
 
-  const best = lowestCurrent(product);
-  const recentLow = recentLowestObserved(product);
+/* -----------------------------
+   HOME
+----------------------------- */
 
-  document.getElementById("pdEmoji").textContent = product.emoji;
-  document.getElementById("pdName").textContent = product.name;
-  document.getElementById("lowestCurrent").textContent = money(best.price);
+function goHome() {
 
-  renderStoreRows(product, best);
+  document.getElementById("searchInput").value = "";
 
-  const diff = best.price - recentLow;
-  const indicator = buyIndicator(best.price, recentLow);
+  document.getElementById("notice").innerHTML = "";
 
-  document.getElementById("recentLowest").textContent = money(recentLow);
-  document.getElementById("diffAmount").textContent = (diff >= 0 ? "+" : "") + money(diff);
+  document.getElementById("heading").textContent =
+    "All Products";
 
-  const el = document.getElementById("buyIndicator");
-  el.className = "indicator " + indicator.level;
-  el.innerHTML = `${indicator.emoji} ${indicator.text}
-    <span class="sub">Current price is ${indicator.pct >= 0 ? indicator.pct.toFixed(1) + "% above" : Math.abs(indicator.pct).toFixed(1) + "% below"} the 6-month lowest observed price.</span>`;
+  renderProducts(PRODUCTS);
 
-  renderChart(product.history);
-  renderTable(product.history);
-
-  document.getElementById("homeView").classList.add("hidden");
-  document.getElementById("detailView").classList.remove("hidden");
-  document.getElementById("backBtn").style.display = "inline-flex";
-  window.scrollTo(0, 0);
 }
 
-function showHome() {
-  document.getElementById("detailView").classList.add("hidden");
-  document.getElementById("homeView").classList.remove("hidden");
-  document.getElementById("backBtn").style.display = "none";
-  window.scrollTo(0, 0);
-}
+
+/* -----------------------------
+   ENTER KEY
+----------------------------- */
+
+document
+  .getElementById("searchInput")
+  .addEventListener("keydown", function(event) {
+
+    if (event.key === "Enter") {
+
+      searchProducts();
+
+    }
+
+  });
+
+
+/* -----------------------------
+   START
+----------------------------- */
 
 loadProducts();
+
 </script>
+
 </body>
 </html>
-
