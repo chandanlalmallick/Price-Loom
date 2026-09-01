@@ -1,55 +1,122 @@
 [
   {
     "id": "phone1",
-    "name": "Galaxy Smartphone 128GB",
+    "name": "Samsung Galaxy Smartphone",
+    "brand": "Samsung",
+    "category": "Mobiles",
+    "tags": ["phone", "smartphone", "android", "mobile"],
     "emoji": "📱",
     "current_amazon": 69499,
-    "current_flipkart": 67999,
-    "history": [
-      { "month": "April", "amazon": 68999, "flipkart": 70999 },
-      { "month": "May", "amazon": 67499, "flipkart": 68999 },
-      { "month": "June", "amazon": 66999, "flipkart": 67999 },
-      { "month": "July", "amazon": 64999, "flipkart": 66999 },
-      { "month": "August", "amazon": 67999, "flipkart": 67999 }
-    ]
+    "current_flipkart": 67999
+  },
+  {
+    "id": "phone2",
+    "name": "iPhone 15",
+    "brand": "Apple",
+    "category": "Mobiles",
+    "tags": ["iphone", "apple", "phone", "smartphone", "mobile"],
+    "emoji": "📱",
+    "current_amazon": 59999,
+    "current_flipkart": 60999
   },
   {
     "id": "laptop1",
-    "name": "Slimbook Laptop i5 16GB",
+    "name": "HP Laptop Core i5",
+    "brand": "HP",
+    "category": "Laptops",
+    "tags": ["laptop", "computer", "notebook", "hp"],
     "emoji": "💻",
     "current_amazon": 54990,
-    "current_flipkart": 56490,
-    "history": [
-      { "month": "June", "amazon": 58990, "flipkart": 59990 },
-      { "month": "July", "amazon": 55990, "flipkart": 57490 },
-      { "month": "August", "amazon": 54990, "flipkart": 56490 }
-    ]
+    "current_flipkart": 56490
   },
   {
     "id": "buds1",
-    "name": "Wireless Earbuds Pro",
+    "name": "Wireless Earbuds",
+    "brand": "boAt",
+    "category": "Audio",
+    "tags": ["earbuds", "headphones", "wireless", "bluetooth", "audio"],
     "emoji": "🎧",
     "current_amazon": 1799,
-    "current_flipkart": 1699,
-    "history": [
-      { "month": "June", "amazon": 1999, "flipkart": 1899 },
-      { "month": "July", "amazon": 1899, "flipkart": 1799 },
-      { "month": "August", "amazon": 1799, "flipkart": 1699 }
-    ]
+    "current_flipkart": 1699
   },
   {
     "id": "tv1",
-    "name": "43-inch Smart LED TV",
+    "name": "43 Inch Smart LED TV",
+    "brand": "Samsung",
+    "category": "Televisions",
+    "tags": ["tv", "television", "smart tv", "led", "samsung"],
     "emoji": "📺",
     "current_amazon": 27999,
-    "current_flipkart": 26499,
-    "history": [
-      { "month": "April", "amazon": 29999, "flipkart": 28999 },
-      { "month": "May", "amazon": 28999, "flipkart": 27999 },
-      { "month": "June", "amazon": 27499, "flipkart": 26999 },
-      { "month": "July", "amazon": 26999, "flipkart": 25999 },
-      { "month": "August", "amazon": 27999, "flipkart": 26499 }
-    ]
+    "current_flipkart": 26499
+  },
+  {
+    "id": "shoe1",
+    "name": "Nike Running Shoes",
+    "brand": "Nike",
+    "category": "Footwear",
+    "tags": ["shoe", "shoes", "running", "nike", "footwear", "sneakers"],
+    "emoji": "👟",
+    "current_amazon": 2999,
+    "current_flipkart": 2799
+  },
+  {
+    "id": "watch1",
+    "name": "Smart Watch",
+    "brand": "boAt",
+    "category": "Wearables",
+    "tags": ["watch", "smartwatch", "wearable", "fitness"],
+    "emoji": "⌚",
+    "current_amazon": 2499,
+    "current_flipkart": 2299
+  },
+  {
+    "id": "fridge1",
+    "name": "Double Door Refrigerator",
+    "brand": "LG",
+    "category": "Appliances",
+    "tags": ["fridge", "refrigerator", "lg", "appliance"],
+    "emoji": "🧊",
+    "current_amazon": 34990,
+    "current_flipkart": 33990
+  },
+  {
+    "id": "washer1",
+    "name": "Fully Automatic Washing Machine",
+    "brand": "Samsung",
+    "category": "Appliances",
+    "tags": ["washing machine", "washer", "laundry", "appliance"],
+    "emoji": "🧺",
+    "current_amazon": 24990,
+    "current_flipkart": 23990
+  },
+  {
+    "id": "camera1",
+    "name": "Digital Camera",
+    "brand": "Canon",
+    "category": "Cameras",
+    "tags": ["camera", "canon", "photography", "dslr"],
+    "emoji": "📷",
+    "current_amazon": 45990,
+    "current_flipkart": 44990
+  },
+  {
+    "id": "tablet1",
+    "name": "Android Tablet",
+    "brand": "Samsung",
+    "category": "Tablets",
+    "tags": ["tablet", "android", "ipad alternative"],
+    "emoji": "📲",
+    "current_amazon": 19999,
+    "current_flipkart": 18999
+  },
+  {
+    "id": "speaker1",
+    "name": "Bluetooth Speaker",
+    "brand": "JBL",
+    "category": "Audio",
+    "tags": ["speaker", "bluetooth", "audio", "jbl"],
+    "emoji": "🔊",
+    "current_amazon": 3999,
+    "current_flipkart": 3799
   }
 ]
-
