@@ -1,0 +1,55 @@
+[
+  {
+    "id": "phone1",
+    "name": "Galaxy Smartphone 128GB",
+    "emoji": "📱",
+    "current_amazon": 69499,
+    "current_flipkart": 67999,
+    "history": [
+      { "month": "April", "amazon": 68999, "flipkart": 70999 },
+      { "month": "May", "amazon": 67499, "flipkart": 68999 },
+      { "month": "June", "amazon": 66999, "flipkart": 67999 },
+      { "month": "July", "amazon": 64999, "flipkart": 66999 },
+      { "month": "August", "amazon": 67999, "flipkart": 67999 }
+    ]
+  },
+  {
+    "id": "laptop1",
+    "name": "Slimbook Laptop i5 16GB",
+    "emoji": "💻",
+    "current_amazon": 54990,
+    "current_flipkart": 56490,
+    "history": [
+      { "month": "June", "amazon": 58990, "flipkart": 59990 },
+      { "month": "July", "amazon": 55990, "flipkart": 57490 },
+      { "month": "August", "amazon": 54990, "flipkart": 56490 }
+    ]
+  },
+  {
+    "id": "buds1",
+    "name": "Wireless Earbuds Pro",
+    "emoji": "🎧",
+    "current_amazon": 1799,
+    "current_flipkart": 1699,
+    "history": [
+      { "month": "June", "amazon": 1999, "flipkart": 1899 },
+      { "month": "July", "amazon": 1899, "flipkart": 1799 },
+      { "month": "August", "amazon": 1799, "flipkart": 1699 }
+    ]
+  },
+  {
+    "id": "tv1",
+    "name": "43-inch Smart LED TV",
+    "emoji": "📺",
+    "current_amazon": 27999,
+    "current_flipkart": 26499,
+    "history": [
+      { "month": "April", "amazon": 29999, "flipkart": 28999 },
+      { "month": "May", "amazon": 28999, "flipkart": 27999 },
+      { "month": "June", "amazon": 27499, "flipkart": 26999 },
+      { "month": "July", "amazon": 26999, "flipkart": 25999 },
+      { "month": "August", "amazon": 27999, "flipkart": 26499 }
+    ]
+  }
+]
+
