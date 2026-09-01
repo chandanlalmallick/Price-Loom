@@ -401,11 +401,12 @@ function escapeHtml(str) {
 // ==================== FETCH PRODUCTS FROM SUPABASE ====================
 async function fetchProductsFromSupabase() {
   const { data, error } = await supabaseClient
-    .from('Products')
+    .from('products')
     .select('*');
 
   if (error || !data || data.length === 0) {
-    console.warn("Could not load from 'Products' table or table is empty.", error);
+    console.warn("Could not load from 'products' table or table is empty.", error);
+    document.getElementById("productGrid").innerHTML = `<div class="empty" style="grid-column: 1 / -1;">No products found in database.</div>`;
     return;
   }
 
@@ -433,7 +434,7 @@ function renderGrid(filterText) {
   const list = q ? PRODUCTS.filter(p => p.name.toLowerCase().includes(q)) : PRODUCTS;
 
   if (!list.length) {
-    grid.innerHTML = `<div class="empty" style="grid-column: 1 / -1;">No products found.</div>`;
+    grid.innerHTML = `<div class="empty" style="grid-column: 1 / -1;">No products match your search.</div>`;
     return;
   }
 
